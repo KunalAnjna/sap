@@ -1,0 +1,67 @@
+workflows:
+
+  android-workflow:
+    name: Android Release
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      java: 17
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Build APK
+        script: flutter build apk --release --no-tree-shake-icons
+      - name: Build AAB
+        script: flutter build appbundle --release --no-tree-shake-icons
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/bundle/release/app-release.aab
+    publishing:
+      email:
+        recipients:
+          - your-email@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  ios-workflow:
+    name: iOS Release
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Install pods
+        script: |
+          cd ios && pod install
+      - name: Build IPA
+        script: flutter build ipa --release --no-tree-shake-icons --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - your-email@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  web-workflow:
+    name: Web Release
+    max_build_duration: 30
+    environment:
+      flutter: stable
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Build Web
+        script: flutter build web --release --no-tree-shake-icons
+    artifacts:
+      - build/web/**
+    publishing:
+      email:
+        recipients:
+          - your-email@gmail.com
